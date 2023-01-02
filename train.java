@@ -10,8 +10,8 @@ public class train
 {
     ArrayList <person> person= new ArrayList<person>();
     double [][] confusionMatrix=new double[2][2];
-    double yes=0, yesAge=0,yesCholestorel=0,male=0,maleYes=0,female=0,femaleYes=0;
-    double no=0, noAge=0,noCholestorel=0,maleNo=0,femaleNo=0;
+    double yesAge=0,yesCholestorel=0,maleYes=0,femaleYes=0;
+    double noAge=0,noCholestorel=0,maleNo=0,femaleNo=0;
     double yesAgeMean=0,noAgeMean=0,yesCholestorelMean=0,noCholestorelMean=0,yesAgeSd=0,noAgeSd=0,yesCholestorelSd=0,noCholestorelSd=0;
     double ProbGenderYes=0,ProbCholestorelYes=0,ProbAgeYes=0,ProbGenderNo=0,ProbAgeNo=0,ProbCholestorelNo=0,e,f,ProbYes=0,ProbNo=0;
     public void train(int fold,int K) throws Exception
@@ -33,36 +33,30 @@ public class train
             person pr= person.get(i);
             if((pr.healthDisease).equals("yes"))
             {
-                yes++;
                 yesAge=yesAge+pr.age;
                 yesCholestorel=yesCholestorel+pr.cholesterol;
                 if((pr.gender).equals("m"))
                 {
-                    male++;
                     maleYes++;
 
                 }
                 else if((pr.gender).equals("f"))
                 {
-                    female++;
                     femaleYes++;
 
                 }
             }
             else if((pr.healthDisease).equals("no"))
             {
-                no++;
                 noAge=noAge+pr.age;
                 noCholestorel=noCholestorel+pr.cholesterol;
                 if((pr.gender).equals("m"))
                 {
-                    male++;
                     maleNo++;
 
                 }
                 else if((pr.gender).equals("f"))
                 {
-                    female++;
                     femaleNo++;
 
                 }
@@ -74,46 +68,40 @@ public class train
             person pr= person.get(i);
             if((pr.healthDisease).equals("yes"))
             {
-                yes++;
                 yesAge=yesAge+pr.age;
                 yesCholestorel=yesCholestorel+pr.cholesterol;
                 if((pr.gender).equals("m"))
                 {
-                    male++;
                     maleYes++;
 
                 }
                 else if((pr.gender).equals("f"))
                 {
-                    female++;
                     femaleYes++;
 
                 }
             }
             else if((pr.healthDisease).equals("no"))
             {
-                no++;
                 noAge=noAge+pr.age;
                 noCholestorel=noCholestorel+pr.cholesterol;
                 if((pr.gender).equals("m"))
                 {
-                    male++;
                     maleNo++;
 
                 }
                 else if((pr.gender).equals("f"))
                 {
-                    female++;
                     femaleNo++;
 
                 }
             }
 
         }
-        yesAgeMean=yesAge/yes;
-        noAgeMean=noAge/no;
-        yesCholestorelMean=yesCholestorel/yes;
-        noCholestorelMean=noCholestorel/no;
+        yesAgeMean=yesAge/(maleYes+femaleYes);
+        noAgeMean=noAge/(maleNo+femaleNo);
+        yesCholestorelMean=yesCholestorel/(maleYes+femaleYes);
+        noCholestorelMean=noCholestorel/(maleNo+femaleNo);
         for(person pr: person)
         {
             if((pr.healthDisease).equals("yes"))
@@ -138,13 +126,13 @@ public class train
             }
 
         }
-        yesAgeSd/=(yes-1);
+        yesAgeSd/=((maleYes+femaleYes)-1);
         yesAgeSd=Math.pow(yesAgeSd, 0.5);
-        noAgeSd/=(no-1);
+        noAgeSd/=((maleNo+femaleNo)-1);
         noAgeSd=Math.pow(noAgeSd, 0.5);
-        yesCholestorelSd/=(yes-1);
+        yesCholestorelSd/=((maleYes+femaleYes)-1);
         yesCholestorelSd=Math.pow(yesCholestorelSd, 0.5);
-        noCholestorelSd/=(no-1);
+        noCholestorelSd/=((maleNo+femaleNo)-1);
         noCholestorelSd=Math.pow(noCholestorelSd, 0.5);
 
     }
@@ -166,14 +154,14 @@ public class train
             person test=person.get(i);
             if((test.gender).equals("m"))
             {
-                ProbGenderYes=maleYes/male;
-                ProbGenderNo=maleNo/male;
+                ProbGenderYes=maleYes/(maleYes+maleNo);
+                ProbGenderNo=maleNo/(maleYes+maleNo);
             }
             else if((test.gender).equals("f"))
             {
-                ProbGenderYes=femaleYes/female;
+                ProbGenderYes=femaleYes/(femaleYes+femaleNo);
 
-                ProbGenderNo=femaleNo/female;
+                ProbGenderNo=femaleNo/(femaleYes+femaleNo);
             }
 
 
