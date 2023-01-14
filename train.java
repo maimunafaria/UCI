@@ -8,54 +8,44 @@ import java.util.Scanner;
 
 public class train
 {
-    ArrayList <person> person= new ArrayList<person>();
+
     double [][] confusionMatrix=new double[2][2];
     double yesAge=0,yesCholestorel=0,maleYes=0,femaleYes=0;
     double noAge=0,noCholestorel=0,maleNo=0,femaleNo=0;
     double yesAgeMean=0,noAgeMean=0,yesCholestorelMean=0,noCholestorelMean=0,yesAgeSd=0,noAgeSd=0,yesCholestorelSd=0,noCholestorelSd=0;
     double ProbGenderYes=0,ProbCholestorelYes=0,ProbAgeYes=0,ProbGenderNo=0,ProbAgeNo=0,ProbCholestorelNo=0,e,f,ProbYes=0,ProbNo=0;
-    public void train(int fold,int K) throws Exception
+    public void train(int fold,int K,ArrayList<person> person) throws Exception
     {
-        Scanner sc= new Scanner(new File("D:\\5th sem\\DBMS-2\\dataset.csv"));
-        while(sc.hasNext())
-        {
-            String temp=sc.nextLine();
-            String[] s=temp.split(",");
-            person p=new person(Integer.parseInt(s[0]),s[1],Integer.parseInt(s[2]),(s[3]));
-            person.add(p);
-        }
-        Collections.shuffle(person);
-
+       
         int start=fold*(person.size()/K);
         int end=start+((person.size()/K)-1);
         for(int i=0; i<start; i++)
         {
-            person pr= person.get(i);
-            if((pr.healthDisease).equals("yes"))
+            if((person.get(i).healthDisease).equals("yes"))
             {
-                yesAge=yesAge+pr.age;
-                yesCholestorel=yesCholestorel+pr.cholesterol;
-                if((pr.gender).equals("m"))
+                yesAge=yesAge+person.get(i).age;
+                yesCholestorel=yesCholestorel+person.get(i).cholesterol;
+                if((person.get(i).gender).equals("m"))
                 {
                     maleYes++;
 
                 }
-                else if((pr.gender).equals("f"))
+                else if((person.get(i).gender).equals("f"))
                 {
                     femaleYes++;
 
                 }
             }
-            else if((pr.healthDisease).equals("no"))
+            else if((person.get(i).healthDisease).equals("no"))
             {
-                noAge=noAge+pr.age;
-                noCholestorel=noCholestorel+pr.cholesterol;
-                if((pr.gender).equals("m"))
+                noAge=noAge+person.get(i).age;
+                noCholestorel=noCholestorel+person.get(i).cholesterol;
+                if((person.get(i).gender).equals("m"))
                 {
                     maleNo++;
 
                 }
-                else if((pr.gender).equals("f"))
+                else if((person.get(i).gender).equals("f"))
                 {
                     femaleNo++;
 
@@ -65,32 +55,32 @@ public class train
         }
         for(int i=end+1; i<person.size(); i++)
         {
-            person pr= person.get(i);
-            if((pr.healthDisease).equals("yes"))
+            
+            if((person.get(i).healthDisease).equals("yes"))
             {
-                yesAge=yesAge+pr.age;
-                yesCholestorel=yesCholestorel+pr.cholesterol;
-                if((pr.gender).equals("m"))
+                yesAge=yesAge+person.get(i).age;
+                yesCholestorel=yesCholestorel+person.get(i).cholesterol;
+                if((person.get(i).gender).equals("m"))
                 {
                     maleYes++;
 
                 }
-                else if((pr.gender).equals("f"))
+                else if((person.get(i).gender).equals("f"))
                 {
                     femaleYes++;
 
                 }
             }
-            else if((pr.healthDisease).equals("no"))
+            else if((person.get(i).healthDisease).equals("no"))
             {
-                noAge=noAge+pr.age;
-                noCholestorel=noCholestorel+pr.cholesterol;
-                if((pr.gender).equals("m"))
+                noAge=noAge+person.get(i).age;
+                noCholestorel=noCholestorel+person.get(i).cholesterol;
+                if((person.get(i).gender).equals("m"))
                 {
                     maleNo++;
 
                 }
-                else if((pr.gender).equals("f"))
+                else if((person.get(i).gender).equals("f"))
                 {
                     femaleNo++;
 
@@ -102,41 +92,32 @@ public class train
         noAgeMean=noAge/(maleNo+femaleNo);
         yesCholestorelMean=yesCholestorel/(maleYes+femaleYes);
         noCholestorelMean=noCholestorel/(maleNo+femaleNo);
-        for(person pr: person)
+        for(int i=0;i<person.size();i++)
         {
-            if((pr.healthDisease).equals("yes"))
+            if((person.get(i).healthDisease).equals("yes"))
             {
-                yesAgeSd+=Math.pow(((pr.age)-yesAgeMean), 2);
+            	yesAgeSd=yesAgeSd+Math.pow(((person.get(i).age)-yesAgeMean), 2);
+            	yesCholestorelSd=yesCholestorelSd+Math.pow(((person.get(i).age)-yesCholestorelMean), 2);
             }
-            else if((pr.healthDisease).equals("no"))
+            else if((person.get(i).healthDisease).equals("no"))
             {
-                noAgeSd+=Math.pow(((pr.age)-noAgeMean), 2);
+            	noAgeSd=noAgeSd+Math.pow(((person.get(i).age)-noAgeMean), 2);
+            	noCholestorelSd=noCholestorelSd+Math.pow(((person.get(i).age)-noCholestorelMean), 2);
             }
 
         }
-        for(person pr: person)
-        {
-            if((pr.healthDisease).equals("yes"))
-            {
-                yesCholestorelSd+=Math.pow(((pr.age)-yesCholestorelMean), 2);
-            }
-            else if((pr.healthDisease).equals("no"))
-            {
-                noCholestorelSd+=Math.pow(((pr.age)-noCholestorelMean), 2);
-            }
-
-        }
-        yesAgeSd/=((maleYes+femaleYes)-1);
+       
+        yesAgeSd=yesAgeSd/((maleYes+femaleYes)-1);
         yesAgeSd=Math.pow(yesAgeSd, 0.5);
-        noAgeSd/=((maleNo+femaleNo)-1);
+        noAgeSd=noAgeSd/((maleNo+femaleNo)-1);
         noAgeSd=Math.pow(noAgeSd, 0.5);
-        yesCholestorelSd/=((maleYes+femaleYes)-1);
+        yesCholestorelSd=yesCholestorelSd/((maleYes+femaleYes)-1);
         yesCholestorelSd=Math.pow(yesCholestorelSd, 0.5);
-        noCholestorelSd/=((maleNo+femaleNo)-1);
+        noCholestorelSd=noCholestorelSd/((maleNo+femaleNo)-1);
         noCholestorelSd=Math.pow(noCholestorelSd, 0.5);
 
     }
-    public void test(int fold,int K) throws Exception
+    public double test(int fold,int K,ArrayList<person> person) throws Exception
     {
 
         int start=fold*(person.size()/K);
@@ -169,8 +150,8 @@ public class train
             ProbAgeYes=Math.pow(ProbAgeYes, 0.5);
             ProbAgeYes=ProbAgeYes/yesAgeSd;
             e=(test.age-yesAgeMean);
-            e=e/yesAgeSd;
-            e=e*e;
+            e=(e/yesAgeSd);
+            e=Math.pow(e, 2);
             e=-0.5*e;
             e=Math.pow(2.718, e);
             ProbAgeYes=ProbAgeYes*e;
@@ -179,7 +160,7 @@ public class train
             ProbAgeNo=ProbAgeNo/noAgeSd;
             e=(test.age-noAgeMean);
             e=e/noAgeSd;
-            e=e*e;
+            e=Math.pow(e, 2);
             e=-0.5*e;
             e=Math.pow(2.718, e);
             ProbAgeNo=ProbAgeNo*e;
@@ -189,7 +170,7 @@ public class train
             ProbCholestorelYes=ProbCholestorelYes/yesCholestorelSd;
             f=(test.cholesterol-yesCholestorelMean);
             f=f/yesCholestorelSd;
-            f=f*f;
+            f=Math.pow(f, 2);
             f=-0.5*f;
             f=Math.pow(2.718, f);
             ProbCholestorelYes=ProbCholestorelYes*f;
@@ -199,13 +180,13 @@ public class train
             ProbCholestorelNo=ProbCholestorelNo/noCholestorelSd;
             f=(test.cholesterol-noCholestorelMean);
             f=f/noCholestorelSd;
-            f=f*f;
+            f=Math.pow(f, 2);
             f=-0.5*f;
             f=Math.pow(2.718, f);
             ProbCholestorelNo=ProbCholestorelNo*f;
 
-            ProbYes=ProbAgeYes*ProbGenderYes*ProbCholestorelYes;
-            ProbNo=ProbAgeNo*ProbGenderYes*ProbCholestorelNo;
+            ProbYes=ProbAgeYes*ProbGenderYes*ProbCholestorelYes*((maleYes+femaleYes)/(maleYes+femaleYes+maleNo+femaleNo));
+            ProbNo=ProbAgeNo*ProbGenderYes*ProbCholestorelNo*((maleNo+femaleNo)/(maleYes+femaleYes+maleNo+femaleNo));
             if(ProbYes>ProbNo && (test.healthDisease).equals("yes"))
             {
                 confusionMatrix[0][0]++;
@@ -229,5 +210,6 @@ public class train
         recall=confusionMatrix[0][0]/(confusionMatrix[0][0]+confusionMatrix[1][0]);
         fScore=(2*precision*recall)/(precision+recall);
         System.out.println("Done testing for fold : "+fold+" and the accuracy is "+fScore);
+        return fScore;
     }
 }
